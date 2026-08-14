@@ -50,7 +50,6 @@ body {
     height: 100%;
 
     /* Main control for how visible the car is */
-    opacity: 0.12;
     display: block;
 }
 

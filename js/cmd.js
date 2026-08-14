@@ -4,6 +4,7 @@ const output = document.getElementById("output")
 
 let port
 let logFile = null
+let commandInProgress = false
 
 import { writeToLogFile } from "./logger.js"
 import { getLogFileHandle } from "./storage.js"
@@ -45,8 +46,30 @@ async function initialiseCommandPage() {
 initialiseCommandPage()
 
 
+async function readWithTimeout(reader, timeout = 3000) {
+    let timer
+    try {
+        return await Promise.race([
+            reader.read(),
+            new Promise((_, reject) => {
+                timer = setTimeout(() => {
+                    reject(
+                        new Error(
+                            "OBD adapter did not respond within 3 seconds"
+                        )
+                    )
+                }, timeout)
+            })
+        ])
+
+    } finally {
+        clearTimeout(timer)
+    }
+}
+
+
 async function sendCommand(command) {
-    if (!port) {
+    if (!port || commandInProgress) {
         return
     }
     command = command.trim().toUpperCase()
@@ -55,31 +78,35 @@ async function sendCommand(command) {
         return
     }
 
+    commandInProgress = true
+    sendButton.disabled = true
+    commandInput.disabled = true
+
     const time = new Date().toLocaleString()
+
+    let writer, reader
 
     try {
         output.textContent += "> " + command + "\n"
 
         // Get access to send data to the adapter
-        const writer = port.writable.getWriter()
+        writer = port.writable.getWriter()
         const encoder = new TextEncoder()
 
         // ELM commands end with a carriage return
-        await writer.write(
-            encoder.encode(command + "\r")
-        )
+        await writer.write(encoder.encode(command + "\r"))
 
         writer.releaseLock()
+        writer = null
 
         // Read the adapter's response
-        const reader = port.readable.getReader()
+        reader = port.readable.getReader()
         const decoder = new TextDecoder()
 
         let response = ""
 
         while (true) {
-            const { value, done } =
-                await reader.read()
+            const { value, done } = await readWithTimeout(reader)
 
             if (done) {
                 break
@@ -94,6 +121,8 @@ async function sendCommand(command) {
         }
 
         reader.releaseLock()
+        reader = null
+
         output.textContent += response + "\n"
         // Scroll to the latest response
         output.scrollTop = output.scrollHeight
@@ -103,6 +132,25 @@ async function sendCommand(command) {
         console.error(error)
         output.textContent += "ERROR: " + error.message + "\n"
         await writeToLogFile(logFile, "[" + time + "] COMMAND: " + command + "\nRESPONSE: " + error.message + "\n\n")
+    } finally {
+        // Always release locks, even if an error occurs
+        if (reader) {
+            try {
+                await reader.cancel()
+                reader.releaseLock()
+            } catch {}
+        }
+
+        if (writer) {
+            try {
+                writer.releaseLock()
+            } catch {}
+        }
+
+        commandInProgress = false
+        sendButton.disabled = false
+        commandInput.disabled = false
+        commandInput.focus()
     }
 }
 

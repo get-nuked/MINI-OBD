@@ -5,23 +5,44 @@ const output = document.getElementById("output")
 let port
 let logFile = null
 
+import { writeToLogFile } from "./logger.js"
+import { getLogFileHandle } from "./storage.js"
 
-export async function writeToLogFile(data) {
-    if (!logFile) {
-        return
+
+async function reconnectToAdapter() {
+    const ports = await navigator.serial.getPorts();
+
+    if (ports.length === 0) {
+        throw new Error("No previously approved adapter found. Please connect your OBD adapter from the setup page.");
+        console.log("No previously approved adapter found");
+        return;
     }
 
+    port = ports[0];
+    await port.open({baudRate: 38400});
+    console.log("Reconnected");
+}
+
+
+async function initialiseCommandPage() {
     try {
-        const file = await logFile.getFile()
-        const writable = await logFile.createWritable({keepExistingData: true})
-        await writable.seek(file.size)
-        await writable.write(data)
-        await writable.close()
+        await reconnectToAdapter()
+        logFile = await getLogFileHandle()
+
+        if (!logFile) {
+            throw new Error("No log file handle found. Please start a new session from the setup page.");
+        }
+        sendButton.disabled = false
+        commandInput.disabled = false
+        commandInput.focus()
+        output.textContent += "Connected to OBD adapter. You can now send commands.\n"
     } catch (error) {
         console.error(error)
-        output.textContent += "\nERROR: " + error.message
+        output.textContent += "Failed to reconnect: " + error.message
     }
 }
+
+initialiseCommandPage()
 
 
 async function sendCommand(command) {
@@ -77,11 +98,11 @@ async function sendCommand(command) {
         // Scroll to the latest response
         output.scrollTop = output.scrollHeight
 
-        await writeToLogFile("[" + time + "] COMMAND: " + command + "\nRESPONSE: " + response + "\n\n")
+        await writeToLogFile(logFile, "[" + time + "] COMMAND: " + command + "\nRESPONSE: " + response + "\n\n")
     } catch (error) {
         console.error(error)
         output.textContent += "ERROR: " + error.message + "\n"
-        await writeToLogFile("[" + time + "] COMMAND: " + command + "\nRESPONSE: " + error.message + "\n\n")
+        await writeToLogFile(logFile, "[" + time + "] COMMAND: " + command + "\nRESPONSE: " + error.message + "\n\n")
     }
 }
 

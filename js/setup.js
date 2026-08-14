@@ -4,7 +4,8 @@ const status = document.getElementById("status")
 let port
 let logFile = null
 
-import { writeToLogFile } from "./cmd.js"
+import { writeToLogFile } from "./logger.js"
+import { saveLogFileHandle } from "./storage.js"
 
 
 connectButton.addEventListener("click", async () => {
@@ -28,14 +29,12 @@ connectButton.addEventListener("click", async () => {
         status.textContent = "Connected"
 
         await createsessionLogFile()
-
-        commandInput.focus()
-
+        await port.close() // Close the port after creating the log file
         window.location.href = "cmd.html";
 
     } catch (error) {
         console.error(error)
-        status.textContent = "Connection failed" + error.message
+        status.textContent = "Connection failed\n" + error.message
     }
 })
 
@@ -55,16 +54,17 @@ async function createsessionLogFile() {
                 }
             ]
         })
+        await saveLogFileHandle(logFile)
     } catch (error) {
         console.error(error)
-        output.textContent += "\nERROR: " + error.message
+        status.textContent += "\nERROR: " + error.message
     }
 
-    await writeToLogFile("MINI OBD Session Log\n" + "Session started at: " + now.toLocaleString() + "\n\n")
+    await writeToLogFile(logFile, "MINI OBD Session Log\n" + "Session started at: " + now.toLocaleString() + "\n\n")
 }
 
 
 
-//writeToLogFile(data) {
+
 
 

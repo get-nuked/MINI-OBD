@@ -1,9 +1,95 @@
+html,
+body {
+    margin: 0;
+    width: 100%;
+    min-height: 100%;
+}
+
+
 body {
     font-family: Arial, sans-serif;
+    background: white;
+    overflow-x: hidden;
+}
+
+
+/* Normal website content stays above the 3D background */
+#appContent {
+    position: relative;
+    z-index: 10;
+
     max-width: 700px;
     margin: 60px auto;
     padding: 20px;
 }
+
+
+/* Full-screen container behind the website */
+#modelBackground {
+    position: fixed;
+    inset: 0;
+
+    width: 100vw;
+    height: 100vh;
+
+    z-index: 0;
+
+    overflow: hidden;
+
+    /* Makes sure the 3D layer never blocks your buttons */
+    pointer-events: none;
+}
+
+
+/* Three.js renders the MINI into this */
+#miniCanvas {
+    position: absolute;
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+
+    /* Main control for how visible the car is */
+    opacity: 0.12;
+    display: block;
+}
+
+
+/* Text sits above the 3D car but below the actual UI */
+#modelText {
+    position: absolute;
+
+    top: 50%;
+    left: 50%;
+
+    transform: translate(-50%, -50%);
+
+    z-index: 2;
+
+    text-align: center;
+
+    pointer-events: none;
+}
+
+
+.modelTitle {
+    font-size: 18px;
+    letter-spacing: 5px;
+    font-weight: 600;
+
+    opacity: 0.45;
+}
+
+
+.modelSubtitle {
+    margin-top: 8px;
+
+    font-size: 10px;
+    letter-spacing: 3px;
+
+    opacity: 0.3;
+}
+
 
 button {
     padding: 12px 20px;
@@ -11,31 +97,13 @@ button {
     cursor: pointer;
 }
 
+
 #status {
     margin-top: 20px;
     font-weight: bold;
 }
 
-#commandArea {
-    margin-top: 20px;
-    display: flex;
-    gap: 10px;
-}
 
-#commandInput {
-    flex: 1;
-    padding: 12px;
-    font-size: 16px;
-    font-family: monospace;
-}
-
-#output {
-    margin-top: 20px;
-    padding: 20px;
-    background: #111;
-    color: #eee;
-    min-height: 200px;
-    /* Keeps line breaks from the OBD response */
-    white-space: pre-wrap;
-    font-family: monospace;
+#folderStatus {
+    margin: 12px 0 20px 0;
 }

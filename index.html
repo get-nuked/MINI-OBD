@@ -6,27 +6,58 @@
 
     <title>MINI OBD Test</title>
 
-    <script type="module" src="js/setup.js"></script>
     <link rel="stylesheet" href="css/style.css">
+
+    <!-- Tells the browser where Three.js comes from -->
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@0.185.1/build/three.module.js",
+            "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.185.1/examples/jsm/"
+        }
+    }
+    </script>
+    <script type="module" src="js/background3d.js"></script>
+    <script type="module" src="js/setup.js"></script>
 </head>
 
+
 <body>
-    <h1>MINI OBD Test</h1>
+    <!-- BACKGROUND 3D AREA -->
+    <div id="modelBackground">
+        <canvas id="miniCanvas"></canvas>
+        <!-- This is normal HTML placed over the 3D model -->
+        <div id="modelText">
+            <div class="modelTitle">
+                MINI R56
+            </div>
 
-    <button id="folderButton">
-        Choose Log Folder
-    </button>
-
-    <div id="folderStatus">
-        No log folder selected
+            <div class="modelSubtitle">
+                OBD DIAGNOSTICS
+            </div>
+        </div>
     </div>
 
-    <button id="connectButton">
-        Connect to OBD Adapter
-    </button>
 
-    <div id="status">
-        Not connected
-    </div>
+    <!-- NORMAL WEBSITE CONTENT -->
+    <main id="appContent">
+        <h1>MINI OBD Test</h1>
+
+        <button id="folderButton">
+            Choose Log Folder
+        </button>
+
+        <div id="folderStatus">
+            No log folder selected
+        </div>
+
+        <button id="connectButton">
+            Connect to OBD Adapter
+        </button>
+
+        <div id="status">
+            Not connected
+        </div>
+    </main>
 </body>
 </html>

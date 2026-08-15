@@ -1,7 +1,7 @@
+const folderButton = document.getElementById("folderBox")
+const folderStatus = document.getElementById("folderStatus")
 const connectButton = document.getElementById("connectButton")
 const status = document.getElementById("status")
-const folderButton = document.getElementById("folderButton")
-const folderStatus =  document.getElementById("folderStatus")
 
 let logDirectory = null
 let port
@@ -14,7 +14,7 @@ import { saveLogFileHandle } from "./storage.js"
 folderButton.addEventListener("click", async () => {
     try {
         logDirectory = await window.showDirectoryPicker({ mode: "readwrite" })
-        folderStatus.textContent = "Log folder: " + logDirectory.name
+        folderStatus.textContent = "Log File is saved at " + logDirectory.name
     } catch (error) {
         console.error(error)
         folderStatus.textContent = "No log folder selected"

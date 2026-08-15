@@ -51,6 +51,7 @@ scene.add(backLight)
 
 const carPivot = new THREE.Group()
 scene.add(carPivot)
+carPivot.position.x = 0
 
 /*
  * LOAD MINI
@@ -74,7 +75,7 @@ loader.load("./assets/models/mimi.glb",
          * Automatically scale the car to a sensible size.
          */
 
-        const desiredSize = 2
+        const desiredSize = 3
         const scale = desiredSize / largestDimension
         car.scale.setScalar(scale)
 
@@ -120,7 +121,7 @@ loader.load("./assets/models/mimi.glb",
 let targetRotationX = 0
 let targetRotationY = 0
 
-const baseRotationY = -Math.PI / 6      // 60 degrees to the left
+const baseRotationY = -Math.PI / 4.5      // 60 degrees to the left
 const baseRotationX = 0     // 15 degrees downward
 
 

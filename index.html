@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>MINI OBD Test</title>
+    <title>MIMI</title>
 
     <link rel="stylesheet" href="css/style.css">
 
@@ -23,41 +23,47 @@
 
 
 <body>
-    <!-- BACKGROUND 3D AREA -->
+    <!-- 3D model area on the right -->
     <div id="modelBackground">
         <canvas id="miniCanvas"></canvas>
-        <!-- This is normal HTML placed over the 3D model -->
-        <div id="modelText">
-            <div class="modelTitle">
-                MINI R56
-            </div>
-
-            <div class="modelSubtitle">
-                OBD DIAGNOSTICS
-            </div>
-        </div>
     </div>
 
+    <!-- Main page content -->
+    <main id="pageLayout">
+        <!-- Left column -->
+        <section id="leftPanel">
+            <!-- Purple box -->
+            <div id="logoArea">
+                <h1>MIMI</h1>
+            </div>
 
-    <!-- NORMAL WEBSITE CONTENT -->
-    <main id="appContent">
-        <h1>MINI OBD Test</h1>
+            <!-- Blue box -->
+            <div id="infoCard">
+                <h2>Getting Started is easy as...</h2>
+                <p> 1. Pair your Bluetooth OBD adapter with your device first.</p>
+                <p> 2. Choose where your session logs should be saved.</p>
+                <p> 3. Once connected, MIMI will create a new log file automatically.</p>
+            </div>
 
-        <button id="folderButton">
-            Choose Log Folder
-        </button>
+            <!-- Green + Yellow row -->
+            <div id="actionRow">
+                <!-- Green box -->
+                <button id="folderBox" type="button">
+                    <span class="label">Log folder</span>
+                    <span id="folderStatus">No log folder selected</span>
+                </button>
 
-        <div id="folderStatus">
-            No log folder selected
-        </div>
+                <!-- Yellow box -->
+                <button id="connectButton" type="button">
+                    Connect
+                </button>
+            </div>
 
-        <button id="connectButton">
-            Connect to OBD Adapter
-        </button>
-
-        <div id="status">
-            Not connected
-        </div>
+            <!-- Small connection status -->
+            <div id="status">
+                Not connected
+            </div>
+        </section>
     </main>
 </body>
 </html>

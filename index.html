@@ -19,11 +19,30 @@
     </script>
     <script type="module" src="js/background3d.js"></script>
     <script type="module" src="js/setup.js"></script>
+    <script defer src="js/pixel-background.js"></script>
+
+    <link
+    rel="preconnect"
+    href="https://fonts.googleapis.com"
+    >
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap"
+        rel="stylesheet"
+    >
 </head>
 
 
 <body>
+    <canvas id="pixelBackground" aria-hidden="true"></canvas>
     <!-- 3D model area on the right -->
+     
     <div id="modelBackground">
         <canvas id="miniCanvas"></canvas>
     </div>

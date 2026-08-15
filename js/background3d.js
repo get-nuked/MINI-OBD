@@ -51,14 +51,85 @@ scene.add(backLight)
 
 const carPivot = new THREE.Group()
 scene.add(carPivot)
-carPivot.position.x = 0
+carPivot.position.x = 0.25
+carPivot.position.y = 0.25
 
 /*
  * LOAD MINI
  */
 
+function createShadowTexture() {
+
+    const shadowCanvas =
+        document.createElement("canvas")
+
+    shadowCanvas.width = 512
+    shadowCanvas.height = 256
+
+    const ctx =
+        shadowCanvas.getContext("2d")
+
+    const centreX = shadowCanvas.width / 2
+    const centreY = shadowCanvas.height / 2
+
+    ctx.save()
+
+    // Squash a circular gradient into a wide ellipse
+    ctx.translate(centreX, centreY)
+    ctx.scale(1, 0.32)
+    ctx.translate(-centreX, -centreY)
+
+    const gradient =
+        ctx.createRadialGradient(
+            centreX,
+            centreY,
+            0,
+            centreX,
+            centreY,
+            220
+        )
+
+    gradient.addColorStop(
+        0,
+        "rgba(0, 0, 0, 0.48)"
+    )
+
+    gradient.addColorStop(
+        0.45,
+        "rgba(0, 0, 0, 0.28)"
+    )
+
+    gradient.addColorStop(
+        0.75,
+        "rgba(0, 0, 0, 0.10)"
+    )
+
+    gradient.addColorStop(
+        1,
+        "rgba(0, 0, 0, 0)"
+    )
+
+    ctx.fillStyle = gradient
+
+    ctx.fillRect(
+        0,
+        0,
+        shadowCanvas.width,
+        shadowCanvas.height
+    )
+
+    ctx.restore()
+
+    const texture =
+        new THREE.CanvasTexture(shadowCanvas)
+
+    texture.needsUpdate = true
+
+    return texture
+}
+
 const loader = new GLTFLoader()
-loader.load("./assets/models/mimi.glb",
+loader.load("./assets/models/minijcw.glb",
     function(gltf) {
         const car = gltf.scene
 
@@ -75,7 +146,7 @@ loader.load("./assets/models/mimi.glb",
          * Automatically scale the car to a sensible size.
          */
 
-        const desiredSize = 3
+        const desiredSize = 4
         const scale = desiredSize / largestDimension
         car.scale.setScalar(scale)
 
@@ -99,6 +170,40 @@ loader.load("./assets/models/mimi.glb",
 
         carPivot.add(car)
 
+        // Create soft oval shadow
+        const shadowTexture =
+            createShadowTexture()
+
+        const shadowMaterial =
+            new THREE.SpriteMaterial({
+                map: shadowTexture,
+                transparent: true,
+                depthWrite: false,
+                depthTest: true
+            })
+
+        const carShadow =
+            new THREE.Sprite(shadowMaterial)
+
+        // Width and height of the shadow
+        carShadow.scale.set(
+            8.0,
+            3,
+            6
+        )
+
+        // Position beneath the car
+        carShadow.position.set(
+            carPivot.position.x,
+            carPivot.position.y -1.5,
+            -0.5
+            
+        )
+
+        // Render behind the car
+        carShadow.renderOrder = -1
+
+        scene.add(carShadow)
         /*
          * Move the entire car slightly downward.
          */
@@ -121,8 +226,8 @@ loader.load("./assets/models/mimi.glb",
 let targetRotationX = 0
 let targetRotationY = 0
 
-const baseRotationY = -Math.PI / 4.5      // 60 degrees to the left
-const baseRotationX = 0     // 15 degrees downward
+const baseRotationY = Math.PI / 3     // 60 degrees to the left
+const baseRotationX = Math.PI / 12    // 15 degrees downward
 
 
 window.addEventListener(

@@ -1,14 +1,17 @@
-const folderButton = document.getElementById("folderBox")
+import { writeToLogFile } from "./logger.js"
+import { saveLogFileHandle } from "./storage.js"
+
+const folderButton =document.getElementById("folderBox")
 const folderStatus = document.getElementById("folderStatus")
 const connectButton = document.getElementById("connectButton")
 const status = document.getElementById("status")
 
 let logDirectory = null
-let port
-let logFile = null
+let port = null
 
-import { writeToLogFile } from "./logger.js"
-import { saveLogFileHandle } from "./storage.js"
+console.log("setup.js loaded")
+console.log("Folder button:", folderButton)
+console.log("Connect button:", connectButton)
 
 
 folderButton.addEventListener("click", async () => {
@@ -62,6 +65,7 @@ async function createsessionLogFile() {
     const logFile = await logDirectory.getFileHandle(filename, { create: true })  
 
     await writeToLogFile(logFile, "MINI OBD Session Log\n" + "Session started at: " + now.toLocaleString() + "\n\n")
+    return logFile
 }
 
 

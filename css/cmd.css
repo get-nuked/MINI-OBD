@@ -1,0 +1,119 @@
+:root {
+    --bg: #090909;
+    --panel: rgba(20, 20, 20, 0.92);
+    --panel-2: #151515;
+    --text: #f2f2f2;
+    --red: #a92d32;
+    --red-dark: #681b1f;
+    --yellow: #ffd34d;
+    --border: rgba(255, 255, 255, 0.12);
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+    margin: 0;
+    min-height: 100%;
+}
+
+body {
+    min-height: 100vh;
+    padding: 40px;
+    font-family: Arial, sans-serif;
+    color: var(--text);
+    background:
+        radial-gradient(circle at 15% 20%, rgba(169, 45, 50, 0.28), transparent 35%),
+        linear-gradient(135deg, #1b090a 0%, var(--bg) 55%, #050505 100%);
+}
+
+h1 {
+    margin: 0 0 24px;
+    font-size: clamp(2rem, 4vw, 3.5rem);
+}
+
+#output {
+    width: min(100%, 1000px);
+    height: 55vh;
+    min-height: 320px;
+    padding: 20px;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    word-break: break-word;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    box-shadow: 0 18px 50px rgba(0, 0, 0, 0.35);
+    color: #d7f7dc;
+    font-family: Consolas, "Courier New", monospace;
+    line-height: 1.55;
+}
+
+#commandArea {
+    width: min(100%, 1000px);
+    display: flex;
+    gap: 12px;
+    margin-top: 16px;
+}
+
+#commandInput {
+    flex: 1;
+    min-width: 0;
+    padding: 14px 16px;
+    color: var(--text);
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    outline: none;
+    font-family: Consolas, "Courier New", monospace;
+    font-size: 1rem;
+}
+
+#commandInput:focus {
+    border-color: var(--red);
+    box-shadow: 0 0 0 3px rgba(169, 45, 50, 0.18);
+}
+
+button {
+    padding: 14px 22px;
+    border: 0;
+    border-radius: 12px;
+    background: var(--yellow);
+    color: #17130a;
+    font-size: 0.95rem;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+button:hover:not(:disabled) {
+    filter: brightness(1.05);
+    transform: translateY(-1px);
+}
+
+button:disabled,
+input:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+#faultScanButton {
+    margin-top: 14px;
+    background: linear-gradient(180deg, var(--red), var(--red-dark));
+    color: white;
+}
+
+@media (max-width: 650px) {
+    body { padding: 22px 16px; }
+
+    #output {
+        height: 58vh;
+        min-height: 280px;
+    }
+
+    #commandArea {
+        flex-direction: column;
+    }
+
+    #sendButton {
+        width: 100%;
+    }
+}

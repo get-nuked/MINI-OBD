@@ -1,65 +1,49 @@
-const sendButton = document.getElementById("sendButton")
-const commandInput = document.getElementById("commandInput")
-const output = document.getElementById("output")
+import { writeToLogFile } from "./logger.js"
+import { getLogFileHandle } from "./storage.js"
+import { openApprovedAdapter, closeAdapter} from "./serial-connection.js"
+import { Elm327 } from "./elm327.js"
+
+
+const sendButton =document.getElementById("sendButton")
+const commandInput =document.getElementById("commandInput")
+const output =document.getElementById("output")
+const faultScanButton = document.getElementById("faultScanButton")
 
 let port = null
+let elm = null
 let logFile = null
 let commandInProgress = false
 
-import { writeToLogFile } from "./logger.js"
-import { getLogFileHandle } from "./storage.js"
-import { openApprovedAdapter } from "./serial-connection.js"
-
-
 async function initialiseCommandPage() {
     try {
+        output.textContent += "Opening OBD adapter...\n"
         port = await openApprovedAdapter()
+        elm = new Elm327(port)
         logFile = await getLogFileHandle()
 
-        if (!logFile) {
-            throw new Error("No log file handle found. Please start a new session from the setup page.");
-        }
+        /*
+         * Test communication immediately.
+         */
+        output.textContent += "Testing adapter...\n"
+        const identification = await elm.send("ATI",5000)
+        output.textContent +="Adapter response:\n" + identification + "\n"
         sendButton.disabled = false
         commandInput.disabled = false
         commandInput.focus()
-        output.textContent += "Connected to OBD adapter. You can now send commands.\n"
+        output.textContent += "OBD adapter ready.\n\n"
     } catch (error) {
         console.error(error)
-        output.textContent += "Failed to reconnect: " + error.message
+
+        output.textContent +="Connection failed: " + error.message + "\n"
     }
 }
-
-initialiseCommandPage()
-
-
-async function readWithTimeout(reader, timeout = 3000) {
-    let timer
-    try {
-        return await Promise.race([
-            reader.read(),
-            new Promise((_, reject) => {
-                timer = setTimeout(() => {
-                    reject(
-                        new Error(
-                            "OBD adapter did not respond within 3 seconds"
-                        )
-                    )
-                }, timeout)
-            })
-        ])
-
-    } finally {
-        clearTimeout(timer)
-    }
-}
-
 
 async function sendCommand(command) {
-    if (!port || commandInProgress) {
+    if (!elm || commandInProgress) {
         return
     }
-    command = command.trim().toUpperCase()
 
+    command = command.trim().toUpperCase()
     if (command === "") {
         return
     }
@@ -67,71 +51,30 @@ async function sendCommand(command) {
     commandInProgress = true
     sendButton.disabled = true
     commandInput.disabled = true
-
-    const time = new Date().toLocaleString()
-    let writer, reader
+    const time =new Date() .toLocaleString()
 
     try {
-        output.textContent += "> " + command + "\n"
+        output.textContent +="> " + command + "\n"
 
-        // Get access to send data to the adapter
-        writer = port.writable.getWriter()
-        const encoder = new TextEncoder()
-
-        // ELM commands end with a carriage return
-        await writer.write(encoder.encode(command + "\r"))
-
-        writer.releaseLock()
-        writer = null
-
-        // Read the adapter's response
-        reader = port.readable.getReader()
-        const decoder = new TextDecoder()
-
-        let response = ""
-
-        while (true) {
-            const { value, done } = await readWithTimeout(reader)
-
-            if (done) {
-                break
-            }
-
-            response += decoder.decode(value)
-
-            // ">" means the ELM327 is ready for another command
-            if (response.includes(">")) {
-                break
-            }
-        }
-
-        reader.releaseLock()
-        reader = null
-
+        /*
+         * Use our shared ELM driver.
+         */
+        const response =await elm.send(command, 5000)
         output.textContent += response + "\n"
-        // Scroll to the latest response
         output.scrollTop = output.scrollHeight
 
-        await writeToLogFile(logFile, "[" + time + "] COMMAND: " + command + "\nRESPONSE: " + response + "\n\n")
+        if (logFile) {
+            await writeToLogFile(logFile, "[" + time + "] COMMAND: " + command + "\nRESPONSE: " + response + "\n\n")
+        }
+
     } catch (error) {
         console.error(error)
-        output.textContent += "ERROR: " + error.message + "\n"
-        await writeToLogFile(logFile, "[" + time + "] COMMAND: " + command + "\nRESPONSE: " + error.message + "\n\n")
+        output.textContent +="ERROR: " + error.message + "\n"
+
+        if (logFile) {
+            await writeToLogFile(logFile, "[" + time + "] COMMAND: " + command + "\nERROR: " + error.message + "\n\n")
+        }
     } finally {
-        // Always release locks, even if an error occurs
-        if (reader) {
-            try {
-                await reader.cancel()
-                reader.releaseLock()
-            } catch {}
-        }
-
-        if (writer) {
-            try {
-                writer.releaseLock()
-            } catch {}
-        }
-
         commandInProgress = false
         sendButton.disabled = false
         commandInput.disabled = false
@@ -139,21 +82,37 @@ async function sendCommand(command) {
     }
 }
 
-
 sendButton.addEventListener("click", async () => {
-    const command = commandInput.value
-    commandInput.value = ""
-    await sendCommand(command)
-    commandInput.focus()
-})
-
-
-// Pressing Enter also sends the command
-commandInput.addEventListener("keydown", async (event) => {
-    if (event.key === "Enter") {
         const command = commandInput.value
         commandInput.value = ""
         await sendCommand(command)
-        commandInput.focus()
     }
-})
+)
+
+commandInput.addEventListener("keydown", async event => {
+        if (event.key === "Enter") {
+            const command = commandInput.value
+            commandInput.value = ""
+            await sendCommand(command)
+        }
+    }
+)
+
+faultScanButton.addEventListener("click", async () => {
+        try {
+            /*
+             * Explicitly close the serial connection
+             * before loading another HTML document.
+             */
+            await closeAdapter(port)
+            port = null
+            elm = null
+            window.location.href = "faults.html"
+        } catch (error) {
+            console.error(error)
+            output.textContent += "Could not open fault scanner: " + error.message + "\n"
+        }
+    }
+)
+
+initialiseCommandPage()

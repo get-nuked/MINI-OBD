@@ -1,5 +1,6 @@
 import { writeToLogFile } from "./logger.js"
 import { saveLogFileHandle } from "./storage.js"
+import { Elm327 } from "./elm327.js"
 
 const folderButton =document.getElementById("folderBox")
 const folderStatus = document.getElementById("folderStatus")
@@ -44,14 +45,30 @@ connectButton.addEventListener("click", async () => {
 
         // Opens the serial connection to the adapter
         await port.open({baudRate: 38400})
+        status.textContent = "Testing OBD adapter..."
 
-        status.textContent = "Connected"
+        /*
+        * Give Bluetooth serial time to establish properly.
+        */
+        await new Promise(resolve => setTimeout(resolve, 1000))
+        const elm = new Elm327(port)
 
+        /*
+        * ATI is harmless and simply asks the adapter
+        * to identify itself.
+        */
+        const identification = await elm.send("ATI", 5000)
+        console.log("ATI response:", identification)
+
+        if (!identification || identification.trim() === ">") {
+            throw new Error("Serial port opened, but the OBD adapter did not respond.")
+        }
+
+        status.textContent = "Connected: " + identification.replace(">", "").trim()
         const logFile = await createsessionLogFile()
         await saveLogFileHandle(logFile)
         await port.close() // Close the port after creating the log file
         window.location.href = "cmd.html";
-
     } catch (error) {
         console.error(error)
         status.textContent = "Connection failed\n" + error.message

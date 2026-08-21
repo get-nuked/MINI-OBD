@@ -2,17 +2,14 @@ import * as THREE from "three"
 import { GLTFLoader} from "three/addons/loaders/GLTFLoader.js"
 
 const canvas = document.getElementById("miniCanvas")
-
 /*
  * SCENE
  */
-
 const scene = new THREE.Scene()
 
 /*
  * CAMERA
  */
-
 const camera = new THREE.PerspectiveCamera(35, canvas.clientWidth / canvas.clientHeight, 0.1, 100)
 camera.position.set(0, 0, 6)
 camera.lookAt(0, 0, 0)
@@ -20,14 +17,10 @@ camera.lookAt(0, 0, 0)
 /*
  * RENDERER
  */
-
 const renderer =new THREE.WebGLRenderer({canvas: canvas, alpha: true, antialias: true})
-
 renderer.setSize(canvas.clientWidth, canvas.clientHeight, false)
-
 /* Stops unnecessarily huge rendering on high-DPI screens */
 renderer.setPixelRatio( Math.min(window.devicePixelRatio, 1.5))
-
 /* Keep the Three.js background transparent */
 renderer.setClearColor(0x000000, 0)
 
@@ -51,7 +44,7 @@ scene.add(backLight)
 
 const carPivot = new THREE.Group()
 scene.add(carPivot)
-carPivot.position.x = 0.25
+carPivot.position.x = -0
 carPivot.position.y = 0.25
 
 /*
@@ -59,16 +52,10 @@ carPivot.position.y = 0.25
  */
 
 function createShadowTexture() {
-
-    const shadowCanvas =
-        document.createElement("canvas")
-
+    const shadowCanvas = document.createElement("canvas")
     shadowCanvas.width = 512
     shadowCanvas.height = 256
-
-    const ctx =
-        shadowCanvas.getContext("2d")
-
+    const ctx = shadowCanvas.getContext("2d")
     const centreX = shadowCanvas.width / 2
     const centreY = shadowCanvas.height / 2
 
@@ -79,52 +66,16 @@ function createShadowTexture() {
     ctx.scale(1, 0.32)
     ctx.translate(-centreX, -centreY)
 
-    const gradient =
-        ctx.createRadialGradient(
-            centreX,
-            centreY,
-            0,
-            centreX,
-            centreY,
-            220
-        )
-
-    gradient.addColorStop(
-        0,
-        "rgba(0, 0, 0, 0.48)"
-    )
-
-    gradient.addColorStop(
-        0.45,
-        "rgba(0, 0, 0, 0.28)"
-    )
-
-    gradient.addColorStop(
-        0.75,
-        "rgba(0, 0, 0, 0.10)"
-    )
-
-    gradient.addColorStop(
-        1,
-        "rgba(0, 0, 0, 0)"
-    )
-
+    const gradient = ctx.createRadialGradient(centreX, centreY, 0, centreX, centreY, 220)
+    gradient.addColorStop(0, "rgba(0, 0, 0, 0.48)")
+    gradient.addColorStop(0.45, "rgba(0, 0, 0, 0.28)")
+    gradient.addColorStop(0.75, "rgba(0, 0, 0, 0.10)")
+    gradient.addColorStop(1, "rgba(0, 0, 0, 0)")
     ctx.fillStyle = gradient
-
-    ctx.fillRect(
-        0,
-        0,
-        shadowCanvas.width,
-        shadowCanvas.height
-    )
-
+    ctx.fillRect( 0, 0, shadowCanvas.width, shadowCanvas.height)
     ctx.restore()
-
-    const texture =
-        new THREE.CanvasTexture(shadowCanvas)
-
+    const texture = new THREE.CanvasTexture(shadowCanvas)
     texture.needsUpdate = true
-
     return texture
 }
 
@@ -171,34 +122,15 @@ loader.load("./assets/models/minijcw.glb",
         carPivot.add(car)
 
         // Create soft oval shadow
-        const shadowTexture =
-            createShadowTexture()
-
-        const shadowMaterial =
-            new THREE.SpriteMaterial({
-                map: shadowTexture,
-                transparent: true,
-                depthWrite: false,
-                depthTest: true
-            })
-
-        const carShadow =
-            new THREE.Sprite(shadowMaterial)
+        const shadowTexture = createShadowTexture()
+        const shadowMaterial = new THREE.SpriteMaterial({ map: shadowTexture, transparent: true, depthWrite: false, depthTest: true })
+        const carShadow = new THREE.Sprite(shadowMaterial)
 
         // Width and height of the shadow
-        carShadow.scale.set(
-            8.0,
-            3,
-            6
-        )
+        carShadow.scale.set( 8.0, 3, 6)
 
         // Position beneath the car
-        carShadow.position.set(
-            carPivot.position.x,
-            carPivot.position.y -1.5,
-            -0.5
-            
-        )
+        carShadow.position.set( carPivot.position.x, carPivot.position.y -1.5, -0.5  )
 
         // Render behind the car
         carShadow.renderOrder = -1
@@ -212,10 +144,7 @@ loader.load("./assets/models/minijcw.glb",
     undefined,
 
     function(error) {
-        console.error(
-            "Could not load MINI model:",
-            error
-        )
+        console.error( "Could not load MINI model:", error)
     }
 )
 
@@ -232,9 +161,7 @@ const baseRotationX = Math.PI / 12    // 15 degrees downward
 
 window.addEventListener(
     "pointermove",
-
     function(event) {
-
         /*
          * Convert mouse coordinates to:
          *
@@ -242,23 +169,15 @@ window.addEventListener(
          *  0 = centre
          * +1 = right/bottom
          */
-
-        const mouseX =
-            (event.clientX / window.innerWidth) * 2 - 1
-
-        const mouseY =
-            (event.clientY / window.innerHeight) * 2 - 1
-
+        const mouseX = (event.clientX / window.innerWidth) * 2 - 1
+        const mouseY = (event.clientY / window.innerHeight) * 2 - 1
 
         /*
          * Only allow a small amount of rotation.
          */
 
-        targetRotationY =
-            mouseX * 0.22
-
-        targetRotationX =
-            mouseY * 0.06
+        targetRotationY = mouseX * 0.22
+        targetRotationX = mouseY * 0.06
     }
 )
 
@@ -269,9 +188,7 @@ window.addEventListener(
 
 document.addEventListener(
     "mouseleave",
-
     function() {
-
         targetRotationX = 0
         targetRotationY = 0
     }
@@ -280,18 +197,13 @@ document.addEventListener(
 
 
 function animate() {
-
     requestAnimationFrame(animate)
-
-
     /*
      * Smoothly approach the cursor position rather
      * than instantly snapping toward it.
      */
-
     carPivot.rotation.y += ((baseRotationY + targetRotationY) - carPivot.rotation.y) * 0.04
     carPivot.rotation.x += ((baseRotationX + targetRotationX) - carPivot.rotation.x) * 0.04
-
     renderer.render( scene, camera)
 }
 
@@ -307,17 +219,13 @@ function resizeScene() {
     const width = canvas.clientWidth
     const height = canvas.clientHeight
     renderer.setSize( width, height, false)
-
     camera.aspect = width / height
-
     camera.updateProjectionMatrix()
-
     updateCameraDistance()
 }
 
 
 function updateCameraDistance() {
-
     const aspect = canvas.clientWidth / canvas.clientHeight
     if (aspect < 0.8) {
         // Portrait phone
@@ -329,10 +237,8 @@ function updateCameraDistance() {
         // Laptop / desktop
         camera.position.z = 6
     }
-
     camera.lookAt(0, 0, 0)
 }
-
 
 window.addEventListener("resize", resizeScene)
 resizeScene()

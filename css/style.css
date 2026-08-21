@@ -1,6 +1,6 @@
 :root {
     --page-padding: 60px;
-    --left-panel-width: 540px;
+    --left-panel-width: 875px;
     --column-gap: 40px;
 }
 
@@ -19,13 +19,21 @@ body {
 body {
     min-height: 100vh;
     position: relative;
-    overflow: hidden;
-    font-family: "Montserrat", Arial, sans-serif;
-
-    /* red to black base */
+    font-family: Arial, sans-serif;
+    overflow-x: hidden;
+    /* Fallback behind pixel canvas */
     background:
-        radial-gradient(circle at 20% 30%, rgba(255, 80, 80, 0.25), transparent 35%),
-        linear-gradient(90deg, #7a1f1f 0%, #3a1111 45%, #050505 100%);
+        radial-gradient(
+            circle at 20% 30%,
+            rgba(255, 80, 80, 0.25),
+            transparent 35%
+        ),
+        linear-gradient(
+            90deg,
+            #7a1f1f 0%,
+            #3a1111 45%,
+            #050505 100%
+        );
 }
 
 button,
@@ -35,34 +43,32 @@ select {
     font-family: inherit;
 }
 
+
+/* Pixel background */
 #pixelBackground {
     position: fixed;
     inset: 0;
     width: 100%;
     height: 100%;
+    display: block;
     z-index: 0;
     pointer-events: none;
-    display: block;
 }
 
-#modelBackground {
-    z-index: 1;
-}
 
-#pageLayout {
-    position: relative;
-    z-index: 10;
-}
-
-/* dark edge fade */
+/* Dark edge fade */
 body::after {
     content: "";
     position: fixed;
     inset: 0;
     pointer-events: none;
-
     background:
-        radial-gradient(circle at center, transparent 45%, rgba(0,0,0,0.35) 100%);
+        radial-gradient(
+            circle at center,
+            transparent 45%,
+            rgba(0, 0, 0, 0.35) 100%
+        );
+    z-index: 0;
 }
 
 
@@ -73,200 +79,196 @@ body::after {
 #pageLayout {
     position: relative;
     z-index: 10;
-
     min-height: 100vh;
-
     padding: 50px var(--page-padding);
     box-sizing: border-box;
 }
 
 
-/* Left side of the page */
 #leftPanel {
-    width: min(
-        var(--left-panel-width),
-        48vw
-    );
-
+    width: min(var(--left-panel-width), 48vw);
+    /* Fill the usable height of the page */
+    min-height: calc(100vh - 100px);
     display: flex;
     flex-direction: column;
-
     gap: 28px;
 }
 
-
-/* =========================
-   LOGO
-   ========================= */
-
-/* =========================
-   LOGO
-   ========================= */
-
-#logoArea {
-    width: fit-content;
+#bottomControls {
+    margin-top: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 30px;
 }
 
-#logoArea h1 {
-    margin: 0;
 
+/* =========================
+   R56 DOC LOGO
+   ========================= */
+
+.r56doc-logo {
+    position: relative;
     display: inline-block;
+    width: max-content;
+    /*
+     * Reserves room for "doc", which is absolutely
+     * positioned below R56.
+     */
+    padding-bottom: 45px;
+}
 
-    padding: 7px 12px 6px;
 
-    background: linear-gradient(
-        to bottom,
-        #454545,
-        #303030
-    );
-
-    border: 3px solid #202020;
-    border-radius: 6px;
-
-    color: #ffd568;
-
-    font-family: Rockwell, "Courier New", Georgia, serif;
-    font-size: 60px;
+.r56-text {
+    display: block;
+    font-family: "Archivo Black", Arial, sans-serif;
+    font-size: 180px;
     font-weight: 900;
+    color: #d5dadc;
+    letter-spacing: -10px;
+    line-height: 0.82;
+}
 
-    letter-spacing: 3px;
+
+.doc-text {
+    position: absolute;
+    right: 9px;
+    bottom: 0;
+    font-family: "Lobster", cursive;
+    font-size: 90px;
+    color: #d5dadc;
     line-height: 1;
-
-    text-shadow:
-        1px 1px 0 #b78b32,
-        2px 2px 0 rgba(0, 0, 0, 0.3);
-
-    box-shadow:
-        inset 0 2px 2px rgba(255, 255, 255, 0.14),
-        inset 0 -3px 4px rgba(0, 0, 0, 0.35),
-        0 3px 6px rgba(0, 0, 0, 0.22);
-
-    transform: rotate(-1deg);
 }
 
 
 /* =========================
-   INFORMATION CARD
+   STICKY NOTE
    ========================= */
 
 #infoCard {
-    padding: 28px;
-
-    background: rgba(255, 255, 255, 0.78);
-
-    border-radius: 18px;
-
-    backdrop-filter: blur(6px);
-
+    position: relative;
+    width: min(380px, 100%);
+    aspect-ratio: 1 / 1;
+    box-sizing: border-box;
+    padding: 32px;
+    background: #f7e98b;
+    color: #2b2414;
+    border-radius: 4px;
     box-shadow:
-        0 10px 30px rgba(0, 0, 0, 0.08);
-}
+        0 14px 22px rgba(0, 0, 0, 0.18),
+        inset 0 -8px 14px rgba(0, 0, 0, 0.06);
+    transform: rotate(-1.2deg);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-self: flex-start;
 
+    font-family: "Handlee", cursive;
+}
 
 #infoCard h2 {
-    margin: 0 0 14px 0;
-
-    font-size: 1.4rem;
+    margin: 0 0 18px 0;
+    font-family: "Handlee", cursive;
+    font-size: 1.55rem;
+    font-weight: 1000;
+    line-height: 1.2;
+    letter-spacing: 1px;
 }
-
 
 #infoCard p {
-    margin: 0 0 12px 0;
-
+    margin: 0 0 14px 0;
+    font-family: "Handlee", cursive;
+    font-size: 1.15rem;
     line-height: 1.5;
+    font-weight: 900;
 }
-
 
 #infoCard p:last-child {
     margin-bottom: 0;
 }
 
 
+/* Tape */
+#infoCard::before {
+    content: "";
+    position: absolute;
+    top: -12px;
+    left: 50%;
+    width: 110px;
+    height: 28px;
+    transform: translateX(-50%) rotate(-3deg);
+    background: rgba(255, 255, 255, 0.38);
+    border-left: 1px solid rgba(255, 255, 255, 0.28);
+    border-right: 1px solid rgba(255, 255, 255, 0.28);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+
+/* Folded corner */
+#infoCard::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 30px;
+    height: 30px;
+    background: linear-gradient( 135deg, transparent 0 49%, #e4d46d 50% 100%);
+    border-bottom-right-radius: 4px;
+}
+
 /* =========================
-   FOLDER + CONNECT ROW
+   FOLDER + CONNECT
    ========================= */
 
 #actionRow {
     display: grid;
-
-    grid-template-columns:
-        minmax(0, 1fr)
-        auto;
-
+    grid-template-columns: minmax(0, 1fr) auto;
     gap: 14px;
-
     align-items: stretch;
 }
 
 
-/* Log folder */
 #folderBox {
     min-width: 0;
-
     padding: 16px 18px;
-
     border: none;
     border-radius: 16px;
-
     background: #dff5e8;
-
     cursor: pointer;
-
     display: flex;
     flex-direction: column;
-
     justify-content: center;
-
     gap: 6px;
-
     text-align: left;
-
-    box-shadow:
-        0 8px 20px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
 }
 
 
 #folderBox .label {
     font-size: 0.85rem;
     font-weight: 700;
-
     opacity: 0.75;
 }
 
 
 #folderStatus {
     font-size: 0.95rem;
-
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
 
 
-/* Connect button */
 #connectButton {
     min-width: 160px;
-
     padding: 0 24px;
-
     border: none;
     border-radius: 16px;
-
     background: #ffd34d;
-
-    font-family: inherit;
     font-size: 1rem;
     font-weight: 700;
-
     cursor: pointer;
-
-    box-shadow:
-        0 8px 20px rgba(0, 0, 0, 0.08);
-}
-
-
-button {
-    font-family: inherit;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
 }
 
 
@@ -275,148 +277,38 @@ button:hover {
 }
 
 
-/* Connection state */
 #status {
     margin-top: -12px;
-
     font-weight: 700;
 }
 
 
 /* =========================
-   3D MIMI AREA
-   ========================= */
-
-/* =========================
-   3D MIMI AREA
+   3D CAR
    ========================= */
 
 #modelBackground {
     position: fixed;
     top: 0;
     bottom: 0;
-
     left: calc(
         var(--page-padding)
         + min(var(--left-panel-width), 48vw)
         + var(--column-gap)
     );
-
     right: 0;
-
     z-index: 1;
     overflow: hidden;
     pointer-events: none;
 }
 
 
-/* SVG decorative scene */
-#sceneLines {
-    position: absolute;
-    inset: 0;
-
-    width: 100%;
-    height: 100%;
-
-    z-index: 1;
-    pointer-events: none;
-}
-
-
-/* 3D car canvas sits above the road */
 #miniCanvas {
     position: absolute;
     inset: 0;
-
     width: 100%;
     height: 100%;
-
     display: block;
-
-    z-index: 2;
-}
-
-
-/* Shared line styling */
-.scene-horizon,
-.scene-skyline,
-.scene-road-edge {
-    fill: none;
-    stroke: #c79664;
-    stroke-width: 6;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-    vector-effect: non-scaling-stroke;
-    opacity: 0.95;
-}
-
-
-/* Yellow dashed middle line */
-.scene-road-dash {
-    fill: none;
-    stroke: #f4aa06;
-    stroke-width: 8;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-    stroke-dasharray: 32 48;
-    vector-effect: non-scaling-stroke;
-    opacity: 1;
-}
-
-
-/* Three.js canvas */
-#miniCanvas {
-    position: absolute;
-
-    top: 0;
-    left: 0;
-
-    width: 100%;
-    height: 100%;
-
-    display: block;
-}
-
-
-/* =========================
-   TEXT OVER MIMI
-   ========================= */
-
-#modelText {
-    position: absolute;
-
-    top: 50%;
-    left: 50%;
-
-    transform:
-        translate(-50%, -50%);
-
-    z-index: 2;
-
-    text-align: center;
-
-    pointer-events: none;
-}
-
-
-.modelTitle {
-    font-size: 18px;
-    font-weight: 600;
-
-    letter-spacing: 5px;
-
-    opacity: 0.45;
-}
-
-
-.modelSubtitle {
-    margin-top: 8px;
-
-    font-size: 10px;
-
-    letter-spacing: 3px;
-
-    opacity: 0.3;
 }
 
 
@@ -425,11 +317,9 @@ button:hover {
    ========================= */
 
 @media (max-width: 900px) {
-
     :root {
         --page-padding: 24px;
     }
-
 
     #pageLayout {
         padding:
@@ -437,24 +327,32 @@ button:hover {
             var(--page-padding);
     }
 
-
     #leftPanel {
-        width: 100%;
-        max-width: 520px;
-
-        margin: 0 auto;
+    width: 100%;
+    max-width: 520px;
+    min-height: calc(100vh - 60px);
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
     }
 
-
-    #logoArea h1 {
-        font-size: 2.2rem;
+    .r56-text {
+        font-size: 120px;
     }
 
+    .doc-text {
+        font-size: 62px;
+    }
 
-    /*
-     * On small screens Mimi becomes
-     * a full-screen faint background.
-     */
+    .r56doc-logo {
+        padding-bottom: 32px;
+    }
+
+    #infoCard {
+        width: min(360px, 100%);
+    }
+
     #modelBackground {
         left: 0;
         right: 0;
@@ -462,21 +360,9 @@ button:hover {
         height: 100vh;
     }
 
-
     #miniCanvas {
         opacity: 0.2;
     }
-
-
-    /*
-     * Folder and Connect stay on one line.
-     */
-    #actionRow {
-        grid-template-columns:
-            minmax(0, 1fr)
-            auto;
-    }
-
 
     #connectButton {
         min-width: 130px;
@@ -491,27 +377,26 @@ button:hover {
    ========================= */
 
 @media (max-width: 450px) {
-
     #pageLayout {
         padding: 22px 16px;
     }
 
+    #infoCard {
+        width: min(320px, 100%);
+        padding: 24px;
+    }
 
     #actionRow {
         gap: 8px;
     }
 
-
     #folderBox {
         padding: 13px 14px;
     }
 
-
     #connectButton {
         min-width: 105px;
-
         padding: 0 12px;
-
         font-size: 0.9rem;
     }
 }

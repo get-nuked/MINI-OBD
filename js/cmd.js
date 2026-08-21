@@ -2,32 +2,18 @@ const sendButton = document.getElementById("sendButton")
 const commandInput = document.getElementById("commandInput")
 const output = document.getElementById("output")
 
-let port
+let port = null
 let logFile = null
 let commandInProgress = false
 
 import { writeToLogFile } from "./logger.js"
 import { getLogFileHandle } from "./storage.js"
-
-
-async function reconnectToAdapter() {
-    const ports = await navigator.serial.getPorts();
-
-    if (ports.length === 0) {
-        throw new Error("No previously approved adapter found. Please connect your OBD adapter from the setup page.");
-        console.log("No previously approved adapter found");
-        return;
-    }
-
-    port = ports[0];
-    await port.open({baudRate: 38400});
-    console.log("Reconnected");
-}
+import { openApprovedAdapter } from "./serial-connection.js"
 
 
 async function initialiseCommandPage() {
     try {
-        await reconnectToAdapter()
+        port = await openApprovedAdapter()
         logFile = await getLogFileHandle()
 
         if (!logFile) {
@@ -83,7 +69,6 @@ async function sendCommand(command) {
     commandInput.disabled = true
 
     const time = new Date().toLocaleString()
-
     let writer, reader
 
     try {

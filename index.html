@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>MIMI</title>
+    <title>R56 doc</title>
 
     <link rel="stylesheet" href="css/style.css">
 
@@ -21,21 +21,9 @@
     <script type="module" src="js/setup.js"></script>
     <script defer src="js/pixel-background.js"></script>
 
-    <link
-    rel="preconnect"
-    href="https://fonts.googleapis.com"
-    >
-
-    <link
-        rel="preconnect"
-        href="https://fonts.gstatic.com"
-        crossorigin
-    >
-
-    <link
-        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap"
-        rel="stylesheet"
-    >
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Handlee&family=Knewave&family=Lobster&display=swap" rel="stylesheet">
 </head>
 
 
@@ -52,8 +40,9 @@
         <!-- Left column -->
         <section id="leftPanel">
             <!-- Purple box -->
-            <div id="logoArea">
-                <h1>MIMI</h1>
+            <div class="r56doc-logo">
+                <span class="r56-text">R56</span>
+                <span class="doc-text">doc</span>
             </div>
 
             <!-- Blue box -->
@@ -61,26 +50,25 @@
                 <h2>Getting Started is easy as...</h2>
                 <p> 1. Pair your Bluetooth OBD adapter with your device first.</p>
                 <p> 2. Choose where your session logs should be saved.</p>
-                <p> 3. Once connected, MIMI will create a new log file automatically.</p>
+                <p> 3. Once connected, I will create a new log file automatically.</p>
             </div>
 
             <!-- Green + Yellow row -->
-            <div id="actionRow">
-                <!-- Green box -->
-                <button id="folderBox" type="button">
-                    <span class="label">Log folder</span>
-                    <span id="folderStatus">No log folder selected</span>
-                </button>
+            <div id="bottomControls">
+                <div id="actionRow">
+                    <button id="folderBox" type="button">
+                        <span class="label">Log folder</span>
+                        <span id="folderStatus">No log folder selected</span>
+                    </button>
 
-                <!-- Yellow box -->
-                <button id="connectButton" type="button">
-                    Connect
-                </button>
-            </div>
+                    <button id="connectButton" type="button">
+                        Connect
+                    </button>
+                </div>
 
-            <!-- Small connection status -->
-            <div id="status">
-                Not connected
+                <div id="status">
+                    Not connected
+                </div>
             </div>
         </section>
     </main>

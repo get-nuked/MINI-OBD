@@ -51,34 +51,6 @@ carPivot.position.y = 0.25
  * LOAD MINI
  */
 
-function createShadowTexture() {
-    const shadowCanvas = document.createElement("canvas")
-    shadowCanvas.width = 512
-    shadowCanvas.height = 256
-    const ctx = shadowCanvas.getContext("2d")
-    const centreX = shadowCanvas.width / 2
-    const centreY = shadowCanvas.height / 2
-
-    ctx.save()
-
-    // Squash a circular gradient into a wide ellipse
-    ctx.translate(centreX, centreY)
-    ctx.scale(1, 0.32)
-    ctx.translate(-centreX, -centreY)
-
-    const gradient = ctx.createRadialGradient(centreX, centreY, 0, centreX, centreY, 220)
-    gradient.addColorStop(0, "rgba(0, 0, 0, 0.48)")
-    gradient.addColorStop(0.45, "rgba(0, 0, 0, 0.28)")
-    gradient.addColorStop(0.75, "rgba(0, 0, 0, 0.10)")
-    gradient.addColorStop(1, "rgba(0, 0, 0, 0)")
-    ctx.fillStyle = gradient
-    ctx.fillRect( 0, 0, shadowCanvas.width, shadowCanvas.height)
-    ctx.restore()
-    const texture = new THREE.CanvasTexture(shadowCanvas)
-    texture.needsUpdate = true
-    return texture
-}
-
 const loader = new GLTFLoader()
 loader.load("./assets/models/minijcw.glb",
     function(gltf) {
@@ -120,25 +92,6 @@ loader.load("./assets/models/minijcw.glb",
         car.position.z -= centre.z
 
         carPivot.add(car)
-
-        // Create soft oval shadow
-        const shadowTexture = createShadowTexture()
-        const shadowMaterial = new THREE.SpriteMaterial({ map: shadowTexture, transparent: true, depthWrite: false, depthTest: true })
-        const carShadow = new THREE.Sprite(shadowMaterial)
-
-        // Width and height of the shadow
-        carShadow.scale.set( 8.0, 3, 6)
-
-        // Position beneath the car
-        carShadow.position.set( carPivot.position.x, carPivot.position.y -1.5, -0.5  )
-
-        // Render behind the car
-        carShadow.renderOrder = -1
-
-        scene.add(carShadow)
-        /*
-         * Move the entire car slightly downward.
-         */
     },
 
     undefined,

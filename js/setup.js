@@ -1,92 +1,167 @@
-import { writeToLogFile } from "./logger.js"
-import { saveLogFileHandle } from "./storage.js"
-import { Elm327 } from "./elm327.js"
+import {writeToLogFile} from "./logger.js"
+import {saveLogFileHandle, clearLogFileHandle} from "./storage.js"
 
-const folderButton =document.getElementById("folderBox")
-const folderStatus = document.getElementById("folderStatus")
+const logFileButton = document.getElementById("folderBox")
+const logFileStatus = document.getElementById("folderStatus")
 const connectButton = document.getElementById("connectButton")
 const status = document.getElementById("status")
 
-let logDirectory = null
 let port = null
 
-console.log("setup.js loaded")
-console.log("Folder button:", folderButton)
-console.log("Connect button:", connectButton)
-
-
-folderButton.addEventListener("click", async () => {
-    try {
-        logDirectory = await window.showDirectoryPicker({ mode: "readwrite" })
-        folderStatus.textContent = "Log File is saved at " + logDirectory.name
-    } catch (error) {
-        console.error(error)
-        folderStatus.textContent = "No log folder selected"
-    }
-})
-
-
+/*
+ * ========================================
+ * CONNECT WITHOUT A LOG FILE
+ * ========================================
+ *
+ * Clicking the normal Connect button starts
+ * the diagnostic session without creating
+ * any log file.
+ */
 connectButton.addEventListener("click", async () => {
-    try { // Check that the browser supports Web Serial
-        if(!logDirectory) {
-            throw new Error("Please select a log folder before connecting to the OBD adapter.")
-        }
-
-        if (!("serial" in navigator)) {
-            throw new Error(
-                "Web Serial is not supported by this browser."
-            )
-        }
-
-        status.textContent = "Choose your OBD adapter..."
-
-        // Opens the browser's serial/Bluetooth device picker
-        port = await navigator.serial.requestPort()
-
-        // Opens the serial connection to the adapter
-        await port.open({baudRate: 38400})
-        status.textContent = "Testing OBD adapter..."
+    try {
+        /*
+        * VERY IMPORTANT:
+        *
+        * Remove any log handle left over
+        * from a previous session.
+        *
+        * Otherwise cmd.html could retrieve
+        * an old log file and start writing
+        * this session into it.
+        */
+        await clearLogFileHandle()
 
         /*
-        * Give Bluetooth serial time to establish properly.
+        * Start the session with no log.
         */
-        await new Promise(resolve => setTimeout(resolve, 1000))
-        const elm = new Elm327(port)
-
-        /*
-        * ATI is harmless and simply asks the adapter
-        * to identify itself.
-        */
-        const identification = await elm.send("ATI", 5000)
-        console.log("ATI response:", identification)
-
-        if (!identification || identification.trim() === ">") {
-            throw new Error("Serial port opened, but the OBD adapter did not respond.")
-        }
-
-        status.textContent = "Connected: " + identification.replace(">", "").trim()
-        const logFile = await createsessionLogFile()
-        await saveLogFileHandle(logFile)
-        await port.close() // Close the port after creating the log file
-        window.location.href = "cmd.html";
+        await startSession(null)
     } catch (error) {
         console.error(error)
-        status.textContent = "Connection failed\n" + error.message
+        status.textContent = "Connection failed: " + error.message
     }
-})
+}
+)
 
 
-async function createsessionLogFile() {
-    const now = new Date()
-    const filename = `MINI-OBD-${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}-${now.getHours()}-${now.getMinutes()}-${now.getSeconds()}.txt`
-    const logFile = await logDirectory.getFileHandle(filename, { create: true })  
+/*
+ * ========================================
+ * CREATE LOG FILE + CONNECT
+ * ========================================
+ *
+ * The user chooses exactly where the .txt
+ * file should be saved and may rename it.
+ *
+ * Once the file has been selected,
+ * R56doc automatically starts the session.
+ */
+logFileButton.addEventListener("click", async () => {
+    try {
+        const logFile = await createSessionLogFile()
+        logFileStatus.textContent = logFile.name
+        /*
+        * Save the file handle so cmd.html
+        * can retrieve it after navigation.
+        */
+        await saveLogFileHandle(logFile)
 
-    await writeToLogFile(logFile, "MINI OBD Session Log\n" + "Session started at: " + now.toLocaleString() + "\n\n")
-    return logFile
+        /*
+        * Automatically start the session.
+        */
+        await startSession(logFile)
+    } catch (error) {
+        /*
+            * If the user simply closes the
+            * Save As dialog, don't pretend
+            * something terrible happened.
+            */
+        if (
+            error.name === "AbortError"
+        ) {
+            logFileStatus.textContent = "No log file created"
+            return
+        }
+
+        console.error(error)
+        status.textContent = "Connection failed: " + error.message
+    }
+}
+)
+
+
+
+/*
+ * ========================================
+ * START DIAGNOSTIC SESSION
+ * ========================================
+ *
+ * logFile may either be:
+ *
+ * FileSystemFileHandle
+ *
+ * OR:
+ *
+ * null
+ *
+ * The actual OBD connection does not depend
+ * on logging existing.
+ */
+async function startSession(logFile = null) {
+    if (!("serial" in navigator)) {
+        throw new Error("Web Serial is not supported by this browser.")
+    }
+
+    status.textContent = "Choose your OBD adapter..."
+    /*
+     * Ask the user which serial/Bluetooth
+     * adapter should be used.
+     */
+    port = await navigator.serial.requestPort()
+    status.textContent = "Opening OBD adapter..."
+    await port.open({baudRate: 38400})
+    status.textContent = "Connected"
+
+    /*
+     * Only initialise the logfile if
+     * logging was requested.
+     */
+    if (logFile) {
+        const now = new Date()
+        await writeToLogFile(logFile, "R56doc Session Log\n" + "Session started at: " + now.toLocaleString() + "\n\n")
+    }
+
+
+    /*
+     * cmd.html opens the approved adapter
+     * again, so release it before navigating.
+     */
+    await port.close()
+    port = null
+    window.location.href = "cmd.html"
 }
 
 
 
+/*
+ * ========================================
+ * CREATE SESSION LOG FILE
+ * ========================================
+ *
+ * Unlike the previous implementation,
+ * this asks for ONE .txt file rather than
+ * asking for an entire folder.
+ */
+async function createSessionLogFile() {
+    if (!("showSaveFilePicker" in window)) {
+        throw new Error("Saving log files is not supported by this browser.")
+    }
 
+    const now = new Date()
+    const filename = `R56doc-${now.getFullYear()}-` + `${String(now.getMonth() + 1).padStart(2, "0")}-` + `${String(now.getDate()).padStart(2, "0")}-` + `${String(now.getHours()).padStart(2, "0")}-` + `${String(now.getMinutes()).padStart(2, "0")}.txt`
 
-
+    /*
+     * Browser opens the normal Save As
+     * dialogue.
+     */
+    const logFile = await window.showSaveFilePicker({suggestedName: filename, types: [{description:"R56doc text log", accept: {"text/plain": [".txt"]}}], excludeAcceptAllOption: false})
+    return logFile
+}

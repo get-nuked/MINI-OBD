@@ -23,7 +23,8 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Handlee&family=Knewave&family=Lobster&display=swap" rel="stylesheet">
+
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 
 
@@ -35,41 +36,39 @@
         <canvas id="miniCanvas"></canvas>
     </div>
 
+    <div id="backgroundR56" aria-hidden="true">
+        R56
+    </div>
+
     <!-- Main page content -->
     <main id="pageLayout">
         <!-- Left column -->
         <section id="leftPanel">
-            <!-- Purple box -->
-            <div class="r56doc-logo">
-                <span class="r56-text">R56</span>
-                <span class="doc-text">doc</span>
-            </div>
-
-            <!-- Blue box -->
-            <div id="infoCard">
-                <h2>Getting Started is easy as...</h2>
-                <p> 1. Pair your Bluetooth OBD adapter with your device first.</p>
-                <p> 2. Choose where your session logs should be saved.</p>
-                <p> 3. Once connected, I will create a new log file automatically.</p>
-            </div>
-
-            <!-- Green + Yellow row -->
-            <div id="bottomControls">
-                <div id="actionRow">
-                    <button id="folderBox" type="button">
-                        <span class="label">Log folder</span>
-                        <span id="folderStatus">No log folder selected</span>
-                    </button>
-
-                    <button id="connectButton" type="button">
-                        Connect
-                    </button>
+            <div class="panel">
+                <div class="r56doc-logo">
+                    <h1>R56 DOC</h1>
                 </div>
+
+                <p id="description">Built for MINI R56 owners who want simple, browser based diagnostics.</p>
+
+                <div id="steps">
+                    <p>Getting Started is easy as...</p>
+                    <p> 1. Pair your Bluetooth OBD adapter to your device</p>
+                    <p> 2. Choose whether to save a log</p>
+                    <p> 3. Connect and begin scanning</p>
+                </div>
+
+                <button id="folderBox" type="button">Create log and connect</button>
+                <button id="connectButton" type="button">Quick Connect</button>
 
                 <div id="status">
                     Not connected
                 </div>
+                
+                <p id="keywords">Fault scan | Live data | ECU info | Command line</p>
             </div>
+
+            <canvas id="pixelBackground" aria-hidden="true"></canvas>
         </section>
     </main>
 </body>

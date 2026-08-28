@@ -20,6 +20,11 @@ async function initialiseCommandPage() {
         port = await openApprovedAdapter()
         elm = new Elm327(port)
         logFile = await getLogFileHandle()
+        if (logFile) {
+            output.textContent += "Session logging enabled.\n"
+        } else {
+            output.textContent += "Session logging disabled.\n"
+        }
 
         /*
          * Test communication immediately.

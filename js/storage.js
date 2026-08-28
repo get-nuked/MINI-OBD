@@ -58,3 +58,21 @@ export async function getLogFileHandle() {
         }
     })
 }
+
+
+export async function clearLogFileHandle() {
+    const database = await openDatabase()
+    return new Promise((resolve, reject) => {
+            const transaction = database.transaction("state", "readwrite")
+            const store = transaction.objectStore("state")
+
+            /*
+             * Remove the previous session's
+             * log file handle.
+             */
+            store.delete("logFile")
+            transaction.oncomplete = () => {resolve()}
+            transaction.onerror = () => {reject(transaction.error)}
+        }
+    )
+}

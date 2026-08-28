@@ -19,21 +19,26 @@ body {
 body {
     min-height: 100vh;
     position: relative;
-    font-family: Arial, sans-serif;
+    font-family: "IBM Plex Mono", monospace;
     overflow-x: hidden;
     /* Fallback behind pixel canvas */
     background:
         radial-gradient(
             circle at 20% 30%,
-            rgba(255, 80, 80, 0.25),
+            rgba(46, 46, 46, 0.25),
             transparent 35%
         ),
         linear-gradient(
             90deg,
-            #7a1f1f 0%,
-            #3a1111 45%,
+            #626666 0%,
+            #353535 45%,
             #050505 100%
         );
+}
+
+body {
+    font-family: "IBM Plex Mono", monospace;
+    color: rgb(184, 213, 218);
 }
 
 button,
@@ -73,6 +78,31 @@ body::after {
 
 
 /* =========================
+   GIANT BACKGROUND R56
+   ========================= */
+
+#backgroundR56 {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1;
+    pointer-events: none;
+    user-select: none;
+    white-space: nowrap;
+
+    font-family: "Chakra Petch", sans-serif;
+    font-weight: 700;
+    line-height: 0.8;
+    letter-spacing: -0.08em;
+
+    font-size: 125vh;
+
+    color: rgba(70, 79, 81, 0.426);
+}
+
+
+/* =========================
    MAIN LAYOUT
    ========================= */
 
@@ -80,18 +110,21 @@ body::after {
     position: relative;
     z-index: 10;
     min-height: 100vh;
-    padding: 50px var(--page-padding);
+
+    padding: 50px 40px 50px 40px;
     box-sizing: border-box;
 }
 
 
 #leftPanel {
-    width: min(var(--left-panel-width), 48vw);
-    /* Fill the usable height of the page */
+    width: 48vw;
+
     min-height: calc(100vh - 100px);
+
     display: flex;
-    flex-direction: column;
-    gap: 28px;
+
+    align-items: center;
+    justify-content: center;
 }
 
 #bottomControls {
@@ -104,182 +137,195 @@ body::after {
 
 
 /* =========================
-   R56 DOC LOGO
+   MAIN LEFT PANEL
    ========================= */
 
-.r56doc-logo {
-    position: relative;
-    display: inline-block;
-    width: max-content;
-    /*
-     * Reserves room for "doc", which is absolutely
-     * positioned below R56.
-     */
-    padding-bottom: 45px;
-}
+.panel {
+    width: 100%;
+    max-width: 680px;
 
+    min-height: 850px;
 
-.r56-text {
-    display: block;
-    font-family: "Archivo Black", Arial, sans-serif;
-    font-size: 180px;
-    font-weight: 900;
-    color: #d5dadc;
-    letter-spacing: -10px;
-    line-height: 0.82;
-}
+    padding: 68px 64px;
 
-
-.doc-text {
-    position: absolute;
-    right: 9px;
-    bottom: 0;
-    font-family: "Lobster", cursive;
-    font-size: 90px;
-    color: #d5dadc;
-    line-height: 1;
-}
-
-
-/* =========================
-   STICKY NOTE
-   ========================= */
-
-#infoCard {
-    position: relative;
-    width: min(380px, 100%);
-    aspect-ratio: 1 / 1;
     box-sizing: border-box;
-    padding: 32px;
-    background: #f7e98b;
-    color: #2b2414;
-    border-radius: 4px;
+
+    background: rgba(13, 18, 18, 0.96);
+
+    border: 1px solid rgba(120, 180, 185, 0.08);
+
+    border-radius: 42px;
+
     box-shadow:
-        0 14px 22px rgba(0, 0, 0, 0.18),
-        inset 0 -8px 14px rgba(0, 0, 0, 0.06);
-    transform: rotate(-1.2deg);
+        0 30px 70px rgba(0, 0, 0, 0.38),
+        inset 0 1px 0 rgba(255, 255, 255, 0.025);
+
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-self: flex-start;
 
-    font-family: "Handlee", cursive;
-}
+    gap: 30px;
 
-#infoCard h2 {
-    margin: 0 0 18px 0;
-    font-family: "Handlee", cursive;
-    font-size: 1.55rem;
-    font-weight: 1000;
-    line-height: 1.2;
-    letter-spacing: 1px;
-}
+    color: rgb(184, 213, 218);
 
-#infoCard p {
-    margin: 0 0 14px 0;
-    font-family: "Handlee", cursive;
-    font-size: 1.15rem;
-    line-height: 1.5;
-    font-weight: 900;
-}
-
-#infoCard p:last-child {
-    margin-bottom: 0;
+    backdrop-filter: blur(8px);
 }
 
 
-/* Tape */
-#infoCard::before {
-    content: "";
-    position: absolute;
-    top: -12px;
-    left: 50%;
-    width: 110px;
-    height: 28px;
-    transform: translateX(-50%) rotate(-3deg);
-    background: rgba(255, 255, 255, 0.38);
-    border-left: 1px solid rgba(255, 255, 255, 0.28);
-    border-right: 1px solid rgba(255, 255, 255, 0.28);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
-}
+/* Logo */
 
+.r56doc-logo h1 {
+    margin: 10px;
+    margin-bottom: 30px;
 
-/* Folded corner */
-#infoCard::after {
-    content: "";
-    position: absolute;
-    right: 0;
-    bottom: 0;
-    width: 30px;
-    height: 30px;
-    background: linear-gradient( 135deg, transparent 0 49%, #e4d46d 50% 100%);
-    border-bottom-right-radius: 4px;
-}
-
-/* =========================
-   FOLDER + CONNECT
-   ========================= */
-
-#actionRow {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    gap: 14px;
-    align-items: stretch;
-}
-
-
-#folderBox {
-    min-width: 0;
-    padding: 16px 18px;
-    border: none;
-    border-radius: 16px;
-    background: #dff5e8;
-    cursor: pointer;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 6px;
-    text-align: left;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-}
-
-
-#folderBox .label {
-    font-size: 0.85rem;
+    font-family: "Chakra Petch", sans-serif;
+    font-size: 3rem;
     font-weight: 700;
-    opacity: 0.75;
+
+    letter-spacing: 2px;
+
+    color: rgb(104, 181, 194);
+    padding-bottom: 10px;
+    text-align: center;
 }
 
 
-#folderStatus {
-    font-size: 0.95rem;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+/* Short product description */
+
+#description {
+    margin: 0;
+
+    max-width: 420px;
+
+    font-size: 1rem;
+    line-height: 1.6;
+
+    color: rgba(184, 213, 218, 0.75);
+    text-align: center;
 }
 
 
+/* Getting started section */
+
+#steps {
+    display: flex;
+    flex-direction: column;
+
+    gap: 10px;
+
+    margin-top: 8px;
+    margin-bottom: 50px;
+}
+
+
+#steps p {
+    margin: 0;
+
+    font-size: 1rem;
+    line-height: 1.55;
+}
+
+
+#steps p:first-child {
+    margin-bottom: 8px;
+
+    font-weight: 600;
+
+    color: rgb(158, 205, 211);
+}
+
+
+/* Buttons */
+
+#folderBox,
 #connectButton {
-    min-width: 160px;
-    padding: 0 24px;
-    border: none;
-    border-radius: 16px;
-    background: #ffd34d;
+    width: 100%;
+
+    min-height: 58px;
+
+    padding: 14px 22px;
+
+    border-radius: 14px;
+
+    font-family: "IBM Plex Mono", monospace;
+
     font-size: 1rem;
     font-weight: 700;
+
     cursor: pointer;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+
+    transition:
+        transform 0.2s ease,
+        background 0.2s ease,
+        border-color 0.2s ease;
 }
 
 
-button:hover {
-    filter: brightness(0.97);
+/* Primary button */
+
+#folderBox {
+    border: 1px solid rgba(121, 181, 186, 0.18);
+
+    background: rgb(37, 52, 52);
+
+    color: rgb(235, 242, 243);
+}
+
+
+#folderBox:hover {
+    background: rgb(45, 63, 63);
+
+    transform: translateY(-2px);
+}
+
+
+/* Secondary button */
+
+#connectButton {
+    border: 1px solid rgba(255, 70, 70, 0.22);
+
+    background: rgb(35, 47, 47);
+    color: rgb(255, 74, 74);
+}
+
+
+#connectButton:hover {
+    background: rgb(44, 56, 56);
+
+    transform: translateY(-2px);
+}
+
+
+/* Connection status */
+
+#status {
+    margin: -10px 0 0;
+
+    font-size: 0.82rem;
+
+    color: rgba(184, 213, 218, 0.55);
+}
+
+
+/* Bottom feature words */
+
+#keywords {
+    margin-top: 30px;
+
+    padding-top: 8px;
+
+    font-size: 0.78rem;
+
+    color: rgba(130, 190, 196, 0.55);
+
+    word-spacing: 8px;
+    text-align: center;
 }
 
 
 #status {
     margin-top: -12px;
     font-weight: 700;
+    text-align: center;
 }
 
 
@@ -291,17 +337,12 @@ button:hover {
     position: fixed;
     top: 0;
     bottom: 0;
-    left: calc(
-        var(--page-padding)
-        + min(var(--left-panel-width), 48vw)
-        + var(--column-gap)
-    );
+    left: 50%;
     right: 0;
-    z-index: 1;
+    z-index: 2;
     overflow: hidden;
     pointer-events: none;
 }
-
 
 #miniCanvas {
     position: absolute;
@@ -328,13 +369,12 @@ button:hover {
     }
 
     #leftPanel {
-    width: 100%;
-    max-width: 520px;
-    min-height: calc(100vh - 60px);
-    margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    gap: 28px;
+        width: 48vw;
+        min-height: calc(100vh - 100px);
+
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
     }
 
     .r56-text {

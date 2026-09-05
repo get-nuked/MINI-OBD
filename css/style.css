@@ -78,6 +78,78 @@ body::after {
 
 
 /* =========================
+   TOP NAVIGATION
+   ========================= */
+
+.top-nav {
+    position: fixed;
+    top: 20px;
+    left: 40px;
+    right: 40px;
+    z-index: 50;
+
+    min-height: 58px;
+    padding: 0 22px;
+    box-sizing: border-box;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+
+    background: rgba(13, 18, 18, 0.88);
+    border: 1px solid rgba(120, 180, 185, 0.12);
+    border-radius: 18px;
+    box-shadow: 0 14px 35px rgba(0, 0, 0, 0.28);
+    backdrop-filter: blur(12px);
+}
+
+.nav-brand {
+    flex: 0 0 auto;
+    font-family: "Chakra Petch", sans-serif;
+    font-size: 1.15rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    color: rgb(104, 181, 194);
+    text-decoration: none;
+}
+
+.nav-links {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 6px;
+}
+
+.nav-links a {
+    padding: 10px 13px;
+    border-radius: 10px;
+
+    color: rgba(184, 213, 218, 0.68);
+    font-size: 0.82rem;
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+
+    transition:
+        color 0.18s ease,
+        background 0.18s ease,
+        transform 0.18s ease;
+}
+
+.nav-links a:hover {
+    color: rgb(218, 238, 240);
+    background: rgba(104, 181, 194, 0.10);
+    transform: translateY(-1px);
+}
+
+.nav-links a.active {
+    color: rgb(104, 181, 194);
+    background: rgba(104, 181, 194, 0.12);
+}
+
+
+/* =========================
    GIANT BACKGROUND R56
    ========================= */
 
@@ -111,7 +183,7 @@ body::after {
     z-index: 10;
     min-height: 100vh;
 
-    padding: 50px 40px 50px 40px;
+    padding: 108px 40px 50px 40px;
     box-sizing: border-box;
 }
 
@@ -119,7 +191,7 @@ body::after {
 #leftPanel {
     width: 48vw;
 
-    min-height: calc(100vh - 100px);
+    min-height: calc(100vh - 158px);
 
     display: flex;
 
@@ -281,10 +353,10 @@ body::after {
 /* Secondary button */
 
 #connectButton {
-    border: 1px solid rgba(255, 70, 70, 0.22);
+    border: 1px solid rgba(70, 255, 138, 0.22);
 
     background: rgb(35, 47, 47);
-    color: rgb(255, 74, 74);
+    color: rgb(74, 255, 180);
 }
 
 
@@ -303,6 +375,36 @@ body::after {
     font-size: 0.82rem;
 
     color: rgba(184, 213, 218, 0.55);
+}
+
+
+.log-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: -8px;
+}
+
+.log-row label {
+    margin: 0;
+    font-size: 1rem;
+    color: rgb(184, 213, 218);
+}
+
+#logFile {
+    width: 18px;
+    height: 18px;
+    margin: 0;
+    accent-color: rgb(104, 181, 194);
+    cursor: pointer;
+}
+
+.log-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: -8px;
 }
 
 
@@ -362,10 +464,39 @@ body::after {
         --page-padding: 24px;
     }
 
+    .top-nav {
+        top: 14px;
+        left: var(--page-padding);
+        right: var(--page-padding);
+        min-height: 54px;
+        padding: 0 14px;
+        gap: 14px;
+    }
+
+    .nav-brand {
+        font-size: 1rem;
+    }
+
+    .nav-links {
+        overflow-x: auto;
+        justify-content: flex-start;
+        scrollbar-width: none;
+    }
+
+    .nav-links::-webkit-scrollbar {
+        display: none;
+    }
+
+    .nav-links a {
+        padding: 9px 10px;
+        font-size: 0.76rem;
+    }
+
     #pageLayout {
         padding:
-            30px
-            var(--page-padding);
+            92px
+            var(--page-padding)
+            30px;
     }
 
     #leftPanel {
@@ -417,8 +548,23 @@ body::after {
    ========================= */
 
 @media (max-width: 450px) {
+    .top-nav {
+        left: 10px;
+        right: 10px;
+        padding: 0 10px;
+        border-radius: 14px;
+    }
+
+    .nav-brand {
+        display: none;
+    }
+
+    .nav-links {
+        width: 100%;
+    }
+
     #pageLayout {
-        padding: 22px 16px;
+        padding: 86px 16px 22px;
     }
 
     #infoCard {
@@ -440,3 +586,4 @@ body::after {
         font-size: 0.9rem;
     }
 }
+

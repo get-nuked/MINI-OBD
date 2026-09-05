@@ -3,20 +3,13 @@ import {saveLogFileHandle, clearLogFileHandle} from "./storage.js"
 
 const logFileButton = document.getElementById("folderBox")
 const logFileStatus = document.getElementById("folderStatus")
+const logFileCheckbox = document.getElementById("logFile")
 const connectButton = document.getElementById("connectButton")
 const status = document.getElementById("status")
 
 let port = null
 
-/*
- * ========================================
- * CONNECT WITHOUT A LOG FILE
- * ========================================
- *
- * Clicking the normal Connect button starts
- * the diagnostic session without creating
- * any log file.
- */
+
 connectButton.addEventListener("click", async () => {
     try {
         /*
@@ -29,55 +22,72 @@ connectButton.addEventListener("click", async () => {
         * an old log file and start writing
         * this session into it.
         */
-        await clearLogFileHandle()
+        if (logFileCheckbox.checked) {
+            // User chooses/creates the .txt logfile.
+            const logFile = await createSessionLogFile()
+            /*
+             * Don't let a missing folderStatus element
+             * murder the rest of the connection process.
+             */
+            if (logFileStatus) {
+                logFileStatus.textContent = logFile.name
+            }
 
-        /*
-        * Start the session with no log.
-        */
-        await startSession(null)
+            /*
+             * STEP 2
+             *
+             * IMPORTANT:
+             * Ask for the OBD adapter IMMEDIATELY after
+             * the Save As picker returns.
+             *
+             * Do not put IndexedDB/log-writing awaits
+             * between these two picker operations.
+             */
+            status.textContent = "Choose your OBD adapter..."
+            port = await navigator.serial.requestPort()
+
+            /*
+             * We now have BOTH handles.
+             *
+             * From here onwards we can safely perform
+             * ordinary asynchronous work.
+             */
+            status.textContent = "Opening OBD adapter..."
+            await port.open({baudRate: 38400})
+
+            /*
+             * Save logfile handle for cmd.html.
+             */
+            await saveLogFileHandle(logFile)
+
+            /*
+             * Initialise the logfile.
+             */
+            const now =new Date()
+            await writeToLogFile(
+                logFile,
+
+                "R56doc Session Log\n" +
+                "Session started at: " +
+                now.toLocaleString() +
+                "\n\n"
+            )
+            status.textContent ="Connected"
+
+            /*
+             * cmd.html reconnects to the approved
+             * adapter, so release it first.
+             */
+            await port.close()
+            port = null
+            window.location.href = "cmd.html"
+        } else {
+            await clearLogFileHandle()
+            await startSession(null)
+        }
     } catch (error) {
-        console.error(error)
-        status.textContent = "Connection failed: " + error.message
-    }
-}
-)
-
-
-/*
- * ========================================
- * CREATE LOG FILE + CONNECT
- * ========================================
- *
- * The user chooses exactly where the .txt
- * file should be saved and may rename it.
- *
- * Once the file has been selected,
- * R56doc automatically starts the session.
- */
-logFileButton.addEventListener("click", async () => {
-    try {
-        const logFile = await createSessionLogFile()
-        logFileStatus.textContent = logFile.name
-        /*
-        * Save the file handle so cmd.html
-        * can retrieve it after navigation.
-        */
-        await saveLogFileHandle(logFile)
-
-        /*
-        * Automatically start the session.
-        */
-        await startSession(logFile)
-    } catch (error) {
-        /*
-            * If the user simply closes the
-            * Save As dialog, don't pretend
-            * something terrible happened.
-            */
-        if (
-            error.name === "AbortError"
-        ) {
-            logFileStatus.textContent = "No log file created"
+        if (error.name === "AbortError") {
+            status.textContent = "Connection cancelled."
             return
         }
 
@@ -86,6 +96,128 @@ logFileButton.addEventListener("click", async () => {
     }
 }
 )
+
+// /*
+//  * ========================================
+//  * CONNECT WITHOUT A LOG FILE
+//  * ========================================
+//  *
+//  * Clicking the normal Connect button starts
+//  * the diagnostic session without creating
+//  * any log file.
+//  */
+// connectButton.addEventListener("click", async () => {
+//     try {
+//         /*
+//         * VERY IMPORTANT:
+//         *
+//         * Remove any log handle left over
+//         * from a previous session.
+//         *
+//         * Otherwise cmd.html could retrieve
+//         * an old log file and start writing
+//         * this session into it.
+//         */
+//         await clearLogFileHandle()
+
+//         /*
+//         * Start the session with no log.
+//         */
+//         await startSession(null)
+//     } catch (error) {
+
+//         console.error(error)
+//         status.textContent = "Connection failed: " + error.message
+//     }
+// }
+// )
+
+
+// /*
+//  * ========================================
+//  * CREATE LOG FILE + CONNECT
+//  * ========================================
+//  *
+//  * The user chooses exactly where the .txt
+//  * file should be saved and may rename it.
+//  *
+//  * Once the file has been selected,
+//  * R56doc automatically starts the session.
+//  */
+// logFileButton.addEventListener("click", async () => {
+//         try {
+//             /*
+//              * STEP 1
+//              * User chooses/creates the .txt logfile.
+//              */
+//             const logFile = await createSessionLogFile()
+//             /*
+//              * Don't let a missing folderStatus element
+//              * murder the rest of the connection process.
+//              */
+//             if (logFileStatus) {
+//                 logFileStatus.textContent = logFile.name
+//             }
+
+//             /*
+//              * STEP 2
+//              *
+//              * IMPORTANT:
+//              * Ask for the OBD adapter IMMEDIATELY after
+//              * the Save As picker returns.
+//              *
+//              * Do not put IndexedDB/log-writing awaits
+//              * between these two picker operations.
+//              */
+//             status.textContent = "Choose your OBD adapter..."
+//             port = await navigator.serial.requestPort()
+
+//             /*
+//              * We now have BOTH handles.
+//              *
+//              * From here onwards we can safely perform
+//              * ordinary asynchronous work.
+//              */
+//             status.textContent = "Opening OBD adapter..."
+//             await port.open({baudRate: 38400})
+
+//             /*
+//              * Save logfile handle for cmd.html.
+//              */
+//             await saveLogFileHandle(logFile)
+
+//             /*
+//              * Initialise the logfile.
+//              */
+//             const now =new Date()
+//             await writeToLogFile(
+//                 logFile,
+
+//                 "R56doc Session Log\n" +
+//                 "Session started at: " +
+//                 now.toLocaleString() +
+//                 "\n\n"
+//             )
+//             status.textContent ="Connected"
+
+//             /*
+//              * cmd.html reconnects to the approved
+//              * adapter, so release it first.
+//              */
+//             await port.close()
+//             port = null
+//             window.location.href = "cmd.html"
+//         } catch (error) {
+//             if (error.name === "AbortError") {
+//                 status.textContent = "Connection cancelled."
+//                 return
+//             }
+
+//             console.error(error)
+//             status.textContent = "Connection failed: " + error.message
+//         }
+//     }
+// )
 
 
 

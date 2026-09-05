@@ -30,6 +30,20 @@
 
 <body>
     <canvas id="pixelBackground" aria-hidden="true"></canvas>
+
+    <!-- Main navigation -->
+    <nav class="top-nav" aria-label="Main navigation">
+        <a class="nav-brand" href="index.html">R56 DOC</a>
+
+        <div class="nav-links">
+            <a class="active" href="index.html">Home</a>
+            <a href="scan.html">Fault Scan</a>
+            <a href="live-data.html">Live Data</a>
+            <a href="ecu.html">ECU Info</a>
+            <a href="cmd.html">Terminal</a>
+        </div>
+    </nav>
+
     <!-- 3D model area on the right -->
      
     <div id="modelBackground">
@@ -58,17 +72,19 @@
                     <p> 3. Connect and begin scanning</p>
                 </div>
 
-                <button id="folderBox" type="button">Create log and connect</button>
-                <button id="connectButton" type="button">Quick Connect</button>
+                <button id="connectButton" type="button">Connect</button>
+
+                <div class="log-row">
+                    <label for="logFile">Save log file</label>
+                    <input type="checkbox" id="logFile" name="logFile" checked />
+                </div>
 
                 <div id="status">
                     Not connected
                 </div>
-                
                 <p id="keywords">Fault scan | Live data | ECU info | Command line</p>
             </div>
 
-            <canvas id="pixelBackground" aria-hidden="true"></canvas>
         </section>
     </main>
 </body>

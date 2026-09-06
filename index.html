@@ -18,7 +18,7 @@
     }
     </script>
     <script type="module" src="js/background3d.js"></script>
-    <script type="module" src="js/setup.js"></script>
+    <script type="module" src="js/demo-setup.js"></script>
     <script defer src="js/pixel-background.js"></script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -72,7 +72,18 @@
                     <p> 3. Connect and begin scanning</p>
                 </div>
 
-                <button id="connectButton" type="button">Connect</button>
+                <div class="demo-row">
+                    <span class="demo-badge" data-connection-badge>DEMO OBD OFFLINE</span>
+                    <label for="demoScenario">Demo scenario</label>
+                    <select id="demoScenario">
+                        <option value="healthy">Healthy engine</option>
+                        <option value="misfire">Cylinder 2 misfire</option>
+                        <option value="lean">Lean mixture</option>
+                        <option value="overheat">Overheating</option>
+                    </select>
+                </div>
+
+                <button id="connectButton" type="button">Connect demo adapter</button>
 
                 <div class="log-row">
                     <label for="logFile">Save log file</label>
@@ -82,6 +93,7 @@
                 <div id="status">
                     Not connected
                 </div>
+                
                 <p id="keywords">Fault scan | Live data | ECU info | Command line</p>
             </div>
 
